@@ -27,9 +27,7 @@ enum OrderStatus {
   CANCELLED
 }
 
-//////////////////////
-// USER
-//////////////////////
+
 
 //////////////////////
 // CATEGORY
@@ -58,7 +56,7 @@ model Medicine {
   sellerId   String
 
   category   Category    @relation(fields: [categoryId], references: [id])
-  // seller      User     @relation("SellerMedicines", fields: [sellerId], references: [id])
+  seller      User     @relation("SellerMedicines", fields: [sellerId], references: [id])
   reviews    Review[]
   orderItems OrderItem[]
 
@@ -128,11 +126,14 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  role          Role      @default(CUSTOMER)
+  phone   String?
 
   @@unique([email])
   @@map("user")
   reviews Review[]
   orders Order[]
+  medicines Medicine[] @relation("SellerMedicines")
 }
 
 model Session {
