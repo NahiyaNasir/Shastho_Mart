@@ -12,3 +12,173 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  CUSTOMER
+  SELLER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+//////////////////////
+// USER
+//////////////////////
+
+//////////////////////
+// CATEGORY
+//////////////////////
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  medicines Medicine[]
+
+  createdAt DateTime @default(now())
+}
+
+//////////////////////
+// MEDICINE
+//////////////////////
+
+model Medicine {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  stock       Int
+
+  categoryId String
+  sellerId   String
+
+  category   Category    @relation(fields: [categoryId], references: [id])
+  // seller      User     @relation("SellerMedicines", fields: [sellerId], references: [id])
+  reviews    Review[]
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//////////////////////
+// ORDER
+//////////////////////
+
+model Order {
+  id         String      @id @default(uuid())
+  userId     String
+  status     OrderStatus @default(PENDING)
+  totalPrice Float
+
+  user       User         @relation(fields: [userId], references: [id])
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+}
+
+//////////////////////
+// ORDER ITEM (Join Table)
+//////////////////////
+
+model OrderItem {
+  id         String @id @default(uuid())
+  orderId    String
+  medicineId String
+  quantity   Int
+  price      Float
+
+  order    Order    @relation(fields: [orderId], references: [id])
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+}
+
+//////////////////////
+// REVIEW
+//////////////////////
+
+model Review {
+  id      String  @id @default(uuid())
+  rating  Int
+  comment String?
+
+  userId     String
+  medicineId String
+
+  user       User     @relation(fields: [userId], references: [id])
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  // one review per user per medicine
+  @@unique([userId, medicineId])
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+  reviews Review[]
+  orders Order[]
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
