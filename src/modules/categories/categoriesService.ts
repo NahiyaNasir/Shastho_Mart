@@ -12,4 +12,24 @@ const createCategoryService = async (
   });
   return result;
 };
-export { createCategoryService };
+const getAllCategoriesService = async () => {
+  const result = await prisma.category.findMany();
+  return result;
+}
+ const deleteCategoryService= async(categoryId:string, isAdmin:boolean)=>{
+   const categoryData= await prisma.category.findUniqueOrThrow({
+    where:{id:categoryId}
+   })
+   if(!categoryData){
+    throw new Error("Category not found")
+   }
+   if(!isAdmin){ 
+    throw new Error("Unauthorized to delete category")
+    }
+
+    const result = await prisma.category.delete({
+      where: { id: categoryId },
+    });
+  return result;
+  }    
+export { createCategoryService, getAllCategoriesService, deleteCategoryService };

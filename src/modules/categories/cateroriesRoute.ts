@@ -1,6 +1,12 @@
 import { Router } from "express";
-import { createCategoryController } from "./categoriesController";
+import { createCategoryController, deleteCategory, getAllCategory } from "./categoriesController";
+
+
+import auth, { UserRole } from "../../middleware/middleware";
 
 const router=Router()
-router.post("/", createCategoryController)
+ router.get("/", getAllCategory)
+router.post("/",auth(UserRole.ADMIN)  , createCategoryController)
+router.delete("/:categoryId",auth(UserRole.ADMIN) ,deleteCategory )
+
 export const categoriesRouter= router;
