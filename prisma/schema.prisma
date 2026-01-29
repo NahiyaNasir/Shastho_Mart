@@ -51,6 +51,7 @@ model Medicine {
   description String?
   price       Float
   stock       Int
+  manufacturer String?
 
   categoryId String
   sellerId   String
