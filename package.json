@@ -2,13 +2,13 @@
   "name": "shasthomart",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx watch src/server.ts",
     "seed:admin": "npx tsx  src/scripts/seedAdmin.ts",
     "build": "tsup src/server.ts --out-dir dist --format cjs --target node20 --minify --sourcemap",
-    "start": "node dist/server.js"
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
