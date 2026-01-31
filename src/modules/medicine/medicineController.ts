@@ -58,12 +58,8 @@ const createMedicineController= async (req:Request,res:Response,next:NextFunctio
   try {
      const medicineId=req.params.medicineId;
      console.log(medicineId);
-      const user=req.user
-      if (!user) {
-            throw new Error("You are unauthorized!")
-        }
-          const isAdmin = user.role === UserRole.ADMIN
-    const result=await updateMedicineService(medicineId as string,req.body, isAdmin,user.id);
+    
+    const result=await updateMedicineService(medicineId as string,req.body, req.user?.id as string);
     res.status(200).json({
       success:true,
       data:result

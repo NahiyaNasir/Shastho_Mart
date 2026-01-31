@@ -26,8 +26,22 @@ export const auth = betterAuth({
     
   },
     emailAndPassword: {    
-        enabled: true
-    } 
+        enabled: true,
+            redirects: { signIn: process.env.APP_URL as string, signUp: process.env.APP_URL as string },
+   
+   
+      } ,
+     socialProviders: {
+      
+        google: { 
+           prompt: "select_account", 
+         accessType: "offline", 
+            clientId: process.env.GOOGLE_CLIENT_ID as string, 
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
+        }, 
+    },
+
+
 });
 
 

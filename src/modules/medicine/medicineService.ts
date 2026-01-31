@@ -70,12 +70,12 @@ const getMedicineByIdService = async (medicineId: string) => {
   });
   return result;
 }
- const updateMedicineService= async(medicineId:string, data:Partial<Medicine>,isAdmin:boolean, sellerId:string)=>{
+ const updateMedicineService= async(medicineId:string, data:Partial<Medicine>, sellerId:string)=>{
    const  medicineData= await prisma.medicine .findUniqueOrThrow({
     where:{id:medicineId},
     select:{sellerId:true}
    })
-   if(!isAdmin && medicineData.sellerId !== sellerId){
+   if( medicineData.sellerId !== sellerId){
     throw new Error("You are unauthorized to update this medicine")
    }
    

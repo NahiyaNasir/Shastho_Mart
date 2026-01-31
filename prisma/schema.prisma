@@ -73,8 +73,8 @@ model Order {
   id         String      @id @default(uuid())
   userId     String
   status     OrderStatus @default(PENDING)
-  totalPrice Float
-
+  totalPrice  Decimal @db.Decimal(10, 2)
+address    String
   user       User         @relation(fields: [userId], references: [id])
   items OrderItem[]
 
@@ -82,7 +82,7 @@ model Order {
 }
 
 //////////////////////
-// ORDER ITEM (Join Table)
+// ORDER ITEM 
 //////////////////////
 
 model OrderItem {
@@ -90,7 +90,7 @@ model OrderItem {
   orderId    String
   medicineId String
   quantity   Int
-  price      Float
+  price      Decimal @db.Decimal(10, 2)
 
   order    Order    @relation(fields: [orderId], references: [id])
   medicine Medicine @relation(fields: [medicineId], references: [id])
