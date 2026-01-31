@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { createMedicineService, deleteMedicineService, getMedicineByIdService, getMedicineService, updateMedicineService } from "./medicineService";
-import { success } from "better-auth/*";
+
 import { UserRole } from "../../middleware/middleware";
+import paginationSortingHelper from "../../helper/paginationHelper";
 
 const createMedicineController= async (req:Request,res:Response,next:NextFunction)=>{
   try {
 
-     const user:any = req.user ;
+     const user = req.user ;
         if (!user) {
             return res.status(400).json({
                 error: "Unauthorized!",
@@ -33,7 +34,8 @@ const createMedicineController= async (req:Request,res:Response,next:NextFunctio
      const category=   (req.query.category) as string 
       const manufacturer= (req.query.manufacturer) as string 
      console.log(manufacturer,"controller");
-    const result=await getMedicineService({search:searchType,category,manufacturer});
+       const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
+    const result=await getMedicineService({search:searchType,category,manufacturer,page,limit,skip,sortBy,sortOrder});
     res.status(200).json({
       success:true,
       data:result

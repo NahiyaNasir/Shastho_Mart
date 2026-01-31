@@ -1,3 +1,4 @@
+import { date } from "better-auth/*";
 import { Medicine } from "../../../generated/prisma/client";
 import { MedicineWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
@@ -20,11 +21,18 @@ const createMedicineService = async (
 const getMedicineService = async ({
   search,
   category,
-  manufacturer
+  manufacturer,page
+,limit,skip,sortBy,sortOrder
+
 }: {
   search: string | undefined;
  category: string | undefined;
  manufacturer: string | undefined;
+  page: number;
+  limit: number;
+  skip: number;
+  sortBy: string;
+  sortOrder: string | undefined
 }) => {
   const addCondition: MedicineWhereInput[] = [];
   if (search) {
@@ -55,15 +63,38 @@ addCondition.push({
   }
 })
  }
+
+
 //  console.log(manufacturer,"service");
-  const result = await prisma.medicine.findMany({
+  const allMedicine = await prisma.medicine.findMany({
+     skip,
+    take: limit,
     where: {
       AND: addCondition,
     },
-    orderBy: {price: 'desc'}
+    orderBy: {
+      [sortBy]: sortOrder 
+    },
+   include:{
+    category:true
+   }
   });
-  return result;
-};
+  const total=await prisma.medicine.count({
+    where: {
+      AND: addCondition,  }
+  
+});
+return{
+  date:allMedicine,
+  pagination:{
+ total,
+  page,
+  limit,
+  totalPages:Math.ceil(total/limit)
+  }
+ 
+}
+}
 const getMedicineByIdService = async (medicineId: string) => {
   const result = await prisma.medicine.findUnique({
     where: { id: medicineId },

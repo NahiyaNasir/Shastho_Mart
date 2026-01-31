@@ -27,7 +27,10 @@ enum OrderStatus {
   CANCELLED
 }
 
-
+enum Status{
+  BAN
+  UNBAN
+}
 
 //////////////////////
 // CATEGORY
@@ -57,12 +60,24 @@ model Medicine {
   sellerId   String
 
   category   Category    @relation(fields: [categoryId], references: [id])
-  seller      User     @relation("SellerMedicines", fields: [sellerId], references: [id])
+  seller     User        @relation("SellerMedicines", fields: [sellerId], references: [id])
   reviews    Review[]
   orderItems OrderItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+model Profile {
+    id             String  @id @default(uuid())
+    userId         String  @unique
+    user           User    @relation(fields: [userId], references: [id])
+    bio            String? @db.VarChar(300)
+    address        String
+    location       String
+    contact_number String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 //////////////////////
@@ -103,7 +118,7 @@ model OrderItem {
 model Review {
   id      String  @id @default(uuid())
   rating  Int
-  comment String?
+  comment String @db.Text
 
   userId     String
   medicineId String
@@ -128,13 +143,16 @@ model User {
   sessions      Session[]
   accounts      Account[]
   role          Role      @default(CUSTOMER)
-  phone   String?
+ 
+  status        Status    @default(UNBAN)
+  sellerMedicines Medicine[] @relation("SellerMedicines")
+  reviews       Review[]
+  orders        Order[]
+  profile       Profile?
 
   @@unique([email])
   @@map("user")
-  reviews Review[]
-  orders Order[]
-  medicines Medicine[] @relation("SellerMedicines")
+ 
 }
 
 model Session {
