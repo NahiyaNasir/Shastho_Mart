@@ -142,6 +142,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  callbackURL      String?
   role          Role      @default(CUSTOMER)
  
   status        Status    @default(UNBAN)

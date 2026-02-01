@@ -27,7 +27,7 @@ export const auth = betterAuth({
   },
     emailAndPassword: {    
         enabled: true,
-            redirects: { signIn: process.env.APP_URL as string, signUp: process.env.APP_URL as string },
+          requireEmailVerification:true
    
    
       } ,
