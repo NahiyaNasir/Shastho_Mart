@@ -2,19 +2,19 @@
   "name": "shasthomart",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsx watch src/server.ts",
     "seed:admin": "npx tsx  src/scripts/seedAdmin.ts",
-  "build": "npx prisma generate && npx tsc",
-  "start": "node dist/server.js"
+  "build": "npx prisma generate && npx tsc"
+
     
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
