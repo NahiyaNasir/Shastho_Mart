@@ -5,7 +5,7 @@ declare const createReviewService: (data: Omit<Review, "id" | "createdAt" | "upd
     userId: string;
     medicineId: string;
     rating: number;
-    comment: string | null;
+    comment: string;
 }>;
 declare const getReviewsService: () => Promise<({
     user: {
@@ -20,7 +20,7 @@ declare const getReviewsService: () => Promise<({
     userId: string;
     medicineId: string;
     rating: number;
-    comment: string | null;
+    comment: string;
 })[]>;
 declare const updateReviewByUser: (userId: string, data: Partial<Review>, reviewId: string) => Promise<{
     id: string;
@@ -28,7 +28,7 @@ declare const updateReviewByUser: (userId: string, data: Partial<Review>, review
     userId: string;
     medicineId: string;
     rating: number;
-    comment: string | null;
+    comment: string;
 }>;
 declare const deleteReviewByAdmin: (reviewId: string) => Promise<{
     id: string;
@@ -36,7 +36,7 @@ declare const deleteReviewByAdmin: (reviewId: string) => Promise<{
     userId: string;
     medicineId: string;
     rating: number;
-    comment: string | null;
+    comment: string;
 }>;
 export { createReviewService, getReviewsService, updateReviewByUser, deleteReviewByAdmin };
 //# sourceMappingURL=reviewService.d.ts.map
