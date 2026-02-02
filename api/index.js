@@ -773,3 +773,7 @@ async function main() {
   }
 }
 main();
+var index_default = app_default;
+export {
+  index_default as default
+};
