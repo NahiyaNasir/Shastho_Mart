@@ -52,7 +52,7 @@ model Medicine {
   id          String  @id @default(uuid())
   name        String
   description String?
-  price       Float
+ price         Decimal  @db.Decimal(10, 2)
   stock       Int
   manufacturer String?
 

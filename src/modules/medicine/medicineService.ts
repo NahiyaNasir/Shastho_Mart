@@ -1,4 +1,4 @@
-import { date } from "better-auth/*";
+
 import { Medicine } from "../../../generated/prisma/client";
 import { MedicineWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
@@ -85,7 +85,7 @@ addCondition.push({
   
 });
 return{
-  date:allMedicine,
+  data:allMedicine,
   pagination:{
  total,
   page,

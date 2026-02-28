@@ -33,7 +33,7 @@ const createMedicineController= async (req:Request,res:Response,next:NextFunctio
     const searchType=   typeof search === 'string' ?search :undefined
      const category=   (req.query.category) as string 
       const manufacturer= (req.query.manufacturer) as string 
-     console.log(manufacturer,"controller");
+    //  console.log(manufacturer,"controller");
        const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query)
     const result=await getMedicineService({search:searchType,category,manufacturer,page,limit,skip,sortBy,sortOrder});
     res.status(200).json({
@@ -46,8 +46,10 @@ const createMedicineController= async (req:Request,res:Response,next:NextFunctio
 }
  const getMedicineById=async(req:Request,res:Response,next:NextFunction)=>{ 
   try {
-    const medicineId=req.params.id
+    const medicineId=req.params.medicineId
+    console.log(medicineId);
     const result=await getMedicineByIdService(medicineId as string);
+    console.log(result);
     res.status(200).json({
       success:true,
       data:result
