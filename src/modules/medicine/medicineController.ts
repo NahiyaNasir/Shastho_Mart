@@ -14,7 +14,7 @@ const createMedicineController= async (req:Request,res:Response,next:NextFunctio
             })
         }
     const result= await createMedicineService (req.body,user.id as string, req.body.categoryId)
-     console.log(result);
+    //  console.log(result);
      res.status(201).json({
       success:true,
       data:result
@@ -40,6 +40,7 @@ const createMedicineController= async (req:Request,res:Response,next:NextFunctio
       success:true,
       data:result
     });
+    console.log(result,"medicine service");
   } catch (error) {
     next(error);
   }

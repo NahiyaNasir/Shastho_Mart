@@ -49,14 +49,14 @@ export const updateReview = async (
 ) => {
   try {
     const user = req.user;
-    // console.log(user);
+    console.log(user);
     if (!user) {
       return res.status(401).json({
         error: "Unauthorized!",
       });
     }
     const { reviewId } = req.params;
-    // console.log(reviewId);
+    console.log(reviewId);
     const result = await updateReviewByUser(
       user.id,
       req.body,

@@ -3,9 +3,10 @@ import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import { auth } from "./lib/auth";
 import { medicineRouter } from "./modules/medicine/medicineRoute";
-import { categoriesRouter } from "./modules/categories/cateroriesRoute";
+
 import { ordersRouter } from "./modules/orders/ordersRoute";
 import { reviewRouter } from "./modules/review/reviewRoute";
+import { categoriesRouter } from "./modules/categories/categoriesRoute";
 
 const app = express();
 const allowedOrigins = [

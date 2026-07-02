@@ -7,7 +7,7 @@ const createCategoryController= async (req:Request,res:Response,next:NextFunctio
 
   
     const result= await createCategoryService (req.body)
-     console.log(result);
+    //  console.log(result);
      res.status(201).json(
         result
      )
@@ -29,7 +29,7 @@ const createCategoryController= async (req:Request,res:Response,next:NextFunctio
  const deleteCategory= async(req:Request,res:Response,next:NextFunction)=>{
   try {
     const categoryId= req.params.categoryId;
-    console.log(categoryId,"controller");
+    // console.log(categoryId,"controller");
     const isAdmin= req.user?.role=== "ADMIN"
     const result= await deleteCategoryService(categoryId as string, isAdmin)      
     res.status(200).json({

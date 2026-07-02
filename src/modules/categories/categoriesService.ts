@@ -14,7 +14,7 @@ const createCategoryService = async (
 };
 const getAllCategoriesService = async () => {
   const result = await prisma.category.findMany();
-  console.log(result);
+  // console.log(result);
   return result;
 }
  const deleteCategoryService= async(categoryId:string, isAdmin:boolean)=>{
