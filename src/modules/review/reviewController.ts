@@ -1,89 +1,81 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import {
   createReviewService,
   deleteReviewByAdmin,
   getReviewsService,
   updateReviewByUser,
 } from "./reviewService";
+import { sendResponse } from "../../shared/SendResponse";
+import { catchAsync } from "../../shared/catchAsync";
 
-const createReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const user = req.user;
-    console.log(user);
-    if (!user) {
-      return res.status(401).json({
-        error: "Unauthorized!",
-      });
-    }
-    const result = await createReviewService(req.body, user.id);
-    console.log(result);
-    res.status(201).json({
-      success: true,
-      message: "Review created successfully",
-      data: result,
-    });
-  } catch (error) {
-    next(error);
+const createReview = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
+  if (!user) {
+    throw new Error("Unauthorized");
   }
-};
-const getReviews = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const result = await getReviewsService();
-    res.status(200).json({
-      success: true,
 
-      data: result,
-    });
-  } catch (error) {
-    next(error);
+  const result = await createReviewService(req.body, user.id);
+
+  sendResponse(res, {
+    httpStatusCode: 201,
+    success: true,
+    message: "Review created successfully",
+    data: result,
+  });
+});
+
+const getReviews = catchAsync(async (req: Request, res: Response) => {
+  const queryParams = {
+    ...(req.query as Record<string, string | undefined>),
+  };
+
+  if (req.query.search && typeof req.query.search === "string") {
+    queryParams.searchTerm = req.query.search;
+    delete queryParams.search;
   }
-};
-export const updateReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const user = req.user;
-    console.log(user);
-    if (!user) {
-      return res.status(401).json({
-        error: "Unauthorized!",
-      });
-    }
-    const { reviewId } = req.params;
-    console.log(reviewId);
-    const result = await updateReviewByUser(
-      user.id,
-      req.body,
-      reviewId as string,
-    );
-    res.status(200).json({ success: true, data: result });
-  } catch (error) {
-    next(error);
+
+  const result = await getReviewsService(queryParams);
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Reviews fetched successfully",
+    data: result.data,
+    meta: result.meta,
+  });
+});
+
+const updateReview = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
+  if (!user) {
+    throw new Error("Unauthorized");
   }
-};
- const deleteReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const user = req.user;
-    if (!user) {
-      return res.status(401).json({
-        error: "Unauthorized!",
-      });
-    }
-    const { reviewId } = req.params;
-    const deletedReview = await deleteReviewByAdmin(reviewId as string);
-    res.status(200).json({ success: true, data: deletedReview });
-  } catch (error) {
-    next(error);
+
+  const { reviewId } = req.params;
+  const result = await updateReviewByUser(user.id, req.body, reviewId as string);
+
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Review updated successfully",
+    data: result,
+  });
+});
+
+const deleteReview = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
+  if (!user) {
+    throw new Error("Unauthorized");
   }
-};
-export { createReview, getReviews,  updateReviewByUser,deleteReview };
+
+  const { reviewId } = req.params;
+  const deletedReview = await deleteReviewByAdmin(reviewId as string);
+
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Review deleted successfully",
+    data: deletedReview,
+  });
+});
+
+export { createReview, getReviews, updateReview, deleteReview };

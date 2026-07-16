@@ -1,6 +1,6 @@
-import {  OrderStatus } from "../../../generated/prisma/client";
-
+import { OrderStatus } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 
 const CreateOrderService = async (
   data:any,
@@ -53,44 +53,50 @@ console.log(totalAmount);
   });
 };
 
-const getAllOrderService=async(status: OrderStatus)=>{  
-    
-  const orders= await prisma.order.findMany({
-    where:{
-      status: status
+const getAllOrderService = async (
+  queryParams: Record<string, string | undefined>,
+) => {
+  const builder = new QueryBuilder(
+    prisma.order,
+    queryParams,
+    {
+      searchableFields: ["user.name", "user.email", "address"],
+      filterableFields: ["status", "userId"],
     },
-    include:{
-      user:{
-        select:{
-          name:true,  
-          email:true
-        }
-      },
-      items:{
-        select:{
-          quantity:true,
-          
-         medicine:{
-          select:{
-            name:true,
-            price:true,
-            category:{
-              select:{
-                name:true
-              }
-            }
-          }
-         }
+  );
+
+  return builder
+    .search()
+    .filter()
+    .paginate()
+    .sort()
+    .include({
+      user: {
+        select: {
+          name: true,
+          email: true,
         },
-        
-      }
-    },
-    orderBy: {
-      createdAt: "desc",
-    }
-  });
-  return orders;
-    }
+      },
+      items: {
+        select: {
+          quantity: true,
+          price: true,
+          medicine: {
+            select: {
+              name: true,
+              price: true,
+              category: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+    .execute();
+};
 const getAllUserOrderService=async(userId:string)=>{  
     
 
