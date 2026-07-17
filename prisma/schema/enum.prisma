@@ -1,0 +1,18 @@
+enum Role {
+  CUSTOMER
+  SELLER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum Status{
+  BAN
+  UNBAN
+}

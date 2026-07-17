@@ -9,14 +9,19 @@
     "dev": "npx tsx watch src/index.ts",
     "seed:admin": "npx tsx  src/scripts/seedAdmin.ts",
     "build": "prisma generate && tsup src/index.ts --format esm --platform node --target node20 --outDir api --external pg-native",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "generate": "prisma generate",
+    "studio": "prisma studio",
+    "push": "prisma db push",
+    "pull": "prisma db pull"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/adapter-pg": "^7.3.0",
-    "@prisma/client": "^7.3.0",
+    "@prisma/client": "^7.8.0",
     "better-auth": "^1.4.17",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
@@ -30,7 +35,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.0.10",
+    "@types/node": "^25.9.5",
     "@types/pg": "^8.16.0",
     "prisma": "^7.3.0",
     "ts-node-dev": "^2.0.0",

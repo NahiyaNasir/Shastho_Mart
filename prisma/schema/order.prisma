@@ -1,0 +1,11 @@
+model Order {
+  id         String      @id @default(uuid())
+  userId     String
+  status     OrderStatus @default(PENDING)
+  totalPrice Decimal      @db.Decimal(10, 2)
+  address    String
+  user       User         @relation(fields: [userId], references: [id])
+  items      OrderItem[]
+
+  createdAt DateTime @default(now())
+}
