@@ -10,6 +10,7 @@ import { UserRole } from "../../middleware/middleware";
 import paginationSortingHelper from "../../helper/paginationHelper";
 import { sendResponse } from "../../shared/SendResponse";
 import { catchAsync } from "../../shared/catchAsync";
+import { IQueryParams } from "../../interface/QueryBuilder.interface";
 
 const createMedicineController = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
@@ -28,16 +29,17 @@ const createMedicineController = catchAsync(async (req: Request, res: Response) 
 });
 
 const getMedicine = catchAsync(async (req: Request, res: Response) => {
-  const queryParams = {
-    ...(req.query as Record<string, string | undefined>),
+   const query: IQueryParams = {
+    searchTerm: req.query.searchTerm as string,
+    page: req.query.page as string,
+    limit: req.query.limit as string,
+    sortBy: req.query.sortBy as string,
+    sortOrder: (req.query.sortOrder as "asc" | "desc") || "desc",
+    fields: req.query.fields as string,
+    includes: req.query.includes as string,
   };
 
-  if (req.query.search && typeof req.query.search === "string") {
-    queryParams.searchTerm = req.query.search;
-    delete queryParams.search;
-  }
-
-  const result = await getMedicineService(queryParams);
+  const result = await getMedicineService(query);
 
   sendResponse(res, {
     httpStatusCode: 200,

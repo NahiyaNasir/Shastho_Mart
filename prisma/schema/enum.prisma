@@ -10,6 +10,7 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+  PROCESSING
 }
 
 enum Status{

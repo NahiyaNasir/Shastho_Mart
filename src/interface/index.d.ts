@@ -7,10 +7,11 @@ declare global {
 }
 
 export interface IRequestUser {
-  userId: string;
+  id: string;
   role: Roles;
   name: string;
   email: string;
-  status: UserStatus;
-  isDeleted: boolean;
+  emailVerified: boolean;
+  status?: UserStatus;
+  isDeleted?: boolean;
 }

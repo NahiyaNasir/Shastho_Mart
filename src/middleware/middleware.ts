@@ -3,6 +3,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import {auth as betterAuth} from "../lib/auth"
+import { IRequestUser } from "../interface";
 export enum UserRole {
     CUSTOMER = "CUSTOMER",
     SELLER= "SELLER",
@@ -11,13 +12,7 @@ export enum UserRole {
 declare global {
     namespace Express {
         interface Request {
-            user?: {
-                id: string;
-                email: string;
-                name: string;
-                role: string;
-                emailVerified: boolean;
-            }
+            user?: IRequestUser;
         }
     }
 }

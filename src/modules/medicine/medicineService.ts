@@ -1,6 +1,9 @@
 
 import { Medicine } from "../../../generated/prisma/client";
 import { MedicineWhereInput } from "../../../generated/prisma/models";
+import { medicinesFilterableFields, medicinesIncludeConfig, medicinesSearchableFields } from "../../config/query.config";
+import { Prisma } from "../../generated/prisma/client";
+import { IQueryParams, IQueryResult } from "../../interface/QueryBuilder.interface";
 import { prisma } from "../../lib/prisma";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 
@@ -20,24 +23,27 @@ const createMedicineService = async (
 };
 
 const getMedicineService = async (
-  queryParams: Record<string, string | undefined>,
-) => {
-  const builder = new QueryBuilder<Medicine, MedicineWhereInput, Record<string, unknown>>(
-    prisma.medicine,
-    queryParams,
-    {
-      searchableFields: ["name", "description", "manufacturer", "category.name"],
-      filterableFields: ["categoryId", "manufacturer", "sellerId", "price", "stock"],
-    },
-  );
+  query: IQueryParams,
+): Promise<IQueryResult<Medicine>> => {
+  const queryBuilder = new QueryBuilder<
+    Medicine,
+    Prisma.MedicineWhereInput,
+    Prisma.MedicineInclude
+  >(prisma.medicine, query, {
+    searchableFields: medicinesSearchableFields,
+    filterableFields: medicinesFilterableFields,
+  });
 
-  return builder
+  const result = await queryBuilder
     .search()
     .filter()
+    .dynamicInclude(medicinesIncludeConfig)
     .paginate()
     .sort()
-    .include({ category: true })
+    .fields()
     .execute();
+
+  return result;
 };
 
 const getMedicineByIdService = async (medicineId: string) => {

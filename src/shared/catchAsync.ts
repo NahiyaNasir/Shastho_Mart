@@ -1,4 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
+import AppError from "../errorHelpers/AppError";
 
 export const catchAsync = (fn: RequestHandler) => {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -6,10 +7,12 @@ export const catchAsync = (fn: RequestHandler) => {
             await fn(req, res, next);
         } catch (error: any) {
             console.log(error);
-            res.status(500).json({
+
+            const statusCode = error instanceof AppError ? error.statusCode : 500;
+
+            res.status(statusCode).json({
                 success: false,
-                message: 'Failed to fetch',
-                error: error.message
+                message: error.message || 'Something went wrong',
             });
         }
     }
