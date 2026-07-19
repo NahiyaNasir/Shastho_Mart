@@ -2,24 +2,28 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../shared/catchAsync";
 import { UserService } from "./user.service";
 import { IQueryParams } from "../../interface/QueryBuilder.interface";
+import { sendResponse } from "../../shared/SendResponse";
 
 
 const getUser = catchAsync(async (req: Request, res: Response) => {
   const user = req?.user;
   const result = await UserService.getUser(user);
-  res.status(200).json({
-    data: result,
+  sendResponse(res,{
+     httpStatusCode: 200,
     success: true,
-    message: "User fetched success.",
+    message: "Review created successfully",
+    data: result,
+    
   });
 });
 const getProfile = catchAsync(async (req: Request, res: Response) => {
   const user = req?.user;
   const result = await UserService.getProfile(user);
-  res.status(200).json({
-    data: result,
+  sendResponse(res, {
+    httpStatusCode: 200,
     success: true,
     message: "Profile fetched success.",
+    data: result
   });
 });
 
@@ -28,9 +32,12 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
   const result = await UserService.updateUser(user, data);
 
-  res
-    .status(201)
-    .json({ data: result, success: true, message: "User update success." });
+  sendResponse(res, {
+    httpStatusCode: 201,
+    success: true,  
+    message: "User updated successfully",
+    data: result,
+  });
 });
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
@@ -47,20 +54,23 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 
   const result = await UserService.getAllUsers(query, user?.id as string);
 
-  res.status(200).json({
+  sendResponse(res, {
+    httpStatusCode: 200,
     success: true,
     message: "Users fetched successfully!",
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 
 const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { userId } = req.params;
   const data = req.body;
 
-  const result = await UserService.updateUserStatus(id as string, data);
+  const result = await UserService.updateUserStatus(userId as string, data);
 
-  res.status(201).json({
+  sendResponse(res, {
+    httpStatusCode: 201,
     success: true,
     message: "User status updated!",
     data: result,
@@ -68,12 +78,13 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateUserRole = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { userId } = req.params;
   const data = req.body;
 
-  const result = await UserService.updateUserRole(id as string, data);
+  const result = await UserService.updateUserRole(userId as string, data);
 
-  res.status(201).json({
+  sendResponse(res, {
+    httpStatusCode: 201,
     success: true,
     message: "User Role updated!",
     data: result,
@@ -81,11 +92,12 @@ const updateUserRole = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { userId } = req.params;
 
-  const result = await UserService.deleteUser(id as string);
+  const result = await UserService.deleteUser(userId as string);
 
-  res.status(200).json({
+  sendResponse(res, {
+    httpStatusCode: 200,
     success: true,
     message: "User delete successfully!",
     data: result,
@@ -94,7 +106,8 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
 
 const adminMetaData = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.adminMetaData();
-  res.status(200).json({
+  sendResponse(res, {
+    httpStatusCode: 200,
     data: result,
     success: true,
     message: "admin meta fetched success.",
@@ -105,7 +118,8 @@ const sellerMetaData = catchAsync(async (req: Request, res: Response) => {
   const user = req?.user;
   console.log(user);
   const result = await UserService.sellerMetaData(user?.id as string);
-  res.status(200).json({
+  sendResponse(res, {
+    httpStatusCode: 200,
     data: result,
     success: true,
     message: "seller meta fetched success.",
@@ -117,9 +131,12 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
   const data = req.body;
   const result = await UserService.updateProfile(user?.id as string, data);
 
-  res
-    .status(201)
-    .json({ data: result, success: true, message: "Profile update success." });
+  sendResponse(res, {
+    httpStatusCode: 201,
+    success: true,  
+    message: "Profile updated successfully",
+    data: result,
+  });
 });
 
 export const UserController = {

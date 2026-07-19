@@ -7,11 +7,12 @@ import {
 } from "./reviewService";
 import { sendResponse } from "../../shared/SendResponse";
 import { catchAsync } from "../../shared/catchAsync";
+import AppError from "../../errorHelpers/AppError";
 
 const createReview = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   if (!user) {
-    throw new Error("Unauthorized");
+    throw new AppError(401, "Unauthorized");
   }
 
   const result = await createReviewService(req.body, user.id);
@@ -47,7 +48,7 @@ const getReviews = catchAsync(async (req: Request, res: Response) => {
 const updateReview = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   if (!user) {
-    throw new Error("Unauthorized");
+    throw new AppError(401, "Unauthorized");
   }
 
   const { reviewId } = req.params;
@@ -64,7 +65,7 @@ const updateReview = catchAsync(async (req: Request, res: Response) => {
 const deleteReview = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   if (!user) {
-    throw new Error("Unauthorized");
+    throw new AppError(401, "Unauthorized");
   }
 
   const { reviewId } = req.params;

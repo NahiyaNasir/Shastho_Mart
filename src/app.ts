@@ -7,6 +7,7 @@ import { medicineRouter } from "./modules/medicine/medicineRoute";
 import { ordersRouter } from "./modules/orders/ordersRoute";
 import { reviewRouter } from "./modules/review/reviewRoute";
 import { categoriesRouter } from "./modules/categories/categoriesRoute";
+import { userRouter } from "./modules/users/user.route";
 
 const app = express();
 const allowedOrigins = [
@@ -69,6 +70,7 @@ app.use("/api/medicine", medicineRouter);
 app.use("/api/categories",categoriesRouter)
 app.use("/api/orders",ordersRouter);
 app.use("/api/review",reviewRouter);
+app.use("/api/admin/users", userRouter);
 app.get("/", (req, res) => {
   res.send("Hello, from shastho mart");
 });

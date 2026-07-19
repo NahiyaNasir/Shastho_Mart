@@ -1,4 +1,5 @@
-import { OrderStatus } from "../../../generated/prisma/client";
+
+import { OrderStatus } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 
@@ -53,30 +54,27 @@ console.log(totalAmount);
   });
 };
 
-const getAllOrderService = async (
+
+const getAllUserOrderService = async (
+  userId: string,
   queryParams: Record<string, string | undefined>,
 ) => {
   const builder = new QueryBuilder(
     prisma.order,
     queryParams,
     {
-      searchableFields: ["user.name", "user.email", "address"],
-      filterableFields: ["status", "userId"],
+      searchableFields: ["address"],
+      filterableFields: ["status"],
     },
   );
 
   return builder
     .search()
     .filter()
+    .where({ userId })
     .paginate()
     .sort()
     .include({
-      user: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
       items: {
         select: {
           quantity: true,
@@ -97,7 +95,7 @@ const getAllOrderService = async (
     })
     .execute();
 };
-const getAllUserOrderService=async(userId:string)=>{  
+const getAllOrderService=async(userId:string)=>{  
     
 
  
