@@ -51,7 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Category: 'Category',
+  Categories: 'Categories',
   Medicine: 'Medicine',
   Order: 'Order',
   OrderItem: 'OrderItem',
@@ -79,24 +79,39 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const CategoryScalarFieldEnum = {
+export const CategoriesScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  createdAt: 'createdAt'
+  image: 'image',
+  description: 'description',
+  slug: 'slug',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
-export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+export type CategoriesScalarFieldEnum = (typeof CategoriesScalarFieldEnum)[keyof typeof CategoriesScalarFieldEnum]
 
 
 export const MedicineScalarFieldEnum = {
   id: 'id',
-  name: 'name',
-  description: 'description',
-  price: 'price',
-  stock: 'stock',
-  manufacturer: 'manufacturer',
-  categoryId: 'categoryId',
   sellerId: 'sellerId',
+  categoryId: 'categoryId',
+  name: 'name',
+  genericName: 'genericName',
+  strength: 'strength',
+  unitType: 'unitType',
+  group: 'group',
+  description: 'description',
+  overview: 'overview',
+  price: 'price',
+  discountPrice: 'discountPrice',
+  stock: 'stock',
+  image: 'image',
+  tags: 'tags',
+  isPrescriptionRequired: 'isPrescriptionRequired',
+  expiryDate: 'expiryDate',
+  sku: 'sku',
+  views: 'views',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

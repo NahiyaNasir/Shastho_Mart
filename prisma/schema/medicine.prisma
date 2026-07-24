@@ -1,19 +1,45 @@
+enum UnitType {
+    Pcs
+    Strip
+    Box
+    Bottle
+}
+
 model Medicine {
-  id          String  @id @default(uuid())
-  name        String
-  description String?
-  price       Decimal  @db.Decimal(10, 2)
-  stock       Int
-  manufacturer String?
+    id         String     @id @default(uuid())
+    sellerId   String
+    seller     User       @relation(fields: [sellerId], references: [id])
+    categoryId String
+    category   Categories @relation(fields: [categoryId], references: [id])
 
-  categoryId String
-  sellerId   String
+    name        String   @db.VarChar(200)
+    genericName String   @db.VarChar(200)
+    strength    String?  @db.VarChar(50)
+    unitType    UnitType @default(Pcs)
 
-  category   Category    @relation(fields: [categoryId], references: [id])
-  seller     User        @relation("SellerMedicines", fields: [sellerId], references: [id])
-  reviews    Review[]
-  orderItems OrderItem[]
+    group       String? @db.VarChar(255)
+    description String  @db.Text
+    overview    String  @db.Text
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    price         Decimal  @db.Decimal(10, 2)
+    discountPrice Decimal? @db.Decimal(10, 2)
+    stock         Int      @default(0)
+
+    image String
+    tags  String[]
+
+    isPrescriptionRequired Boolean   @default(false)
+    expiryDate             DateTime?
+    sku                    String?   @db.VarChar(100)
+
+    views   Int         @default(0)
+    orders  OrderItem[]
+    reviews Review[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([name, sellerId])
+    @@index([categoryId])
+    users User[] @relation("SellerMedicines")
 }

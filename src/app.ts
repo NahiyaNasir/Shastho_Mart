@@ -8,13 +8,14 @@ import { ordersRouter } from "./modules/orders/ordersRoute";
 import { reviewRouter } from "./modules/review/reviewRoute";
 import { categoriesRouter } from "./modules/categories/categoriesRoute";
 import { userRouter } from "./modules/users/user.route";
+import { statsRouter } from "./modules/stats/stats.route";
 
 const app = express();
 const allowedOrigins = [
 
-  process.env.APP_URL || "http://localhost:3000",
+  process.env.APP_URL || "https://shastho-mart-client.vercel.app",
 
-  process.env.PROD_APP_URL, // Production frontend URL
+
 
 ].filter(Boolean); // Remove undefined values
 app.use(
@@ -71,6 +72,7 @@ app.use("/api/categories",categoriesRouter)
 app.use("/api/orders",ordersRouter);
 app.use("/api/review",reviewRouter);
 app.use("/api/admin/users", userRouter);
+app.use("/api/stats", statsRouter);
 app.get("/", (req, res) => {
   res.send("Hello, from shastho mart");
 });

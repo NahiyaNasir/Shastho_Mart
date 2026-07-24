@@ -276,7 +276,7 @@ export type OrderItemCreateInput = {
   quantity: number
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
   order: Prisma.OrderCreateNestedOneWithoutItemsInput
-  medicine: Prisma.MedicineCreateNestedOneWithoutOrderItemsInput
+  medicine: Prisma.MedicineCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderItemUncheckedCreateInput = {
@@ -292,7 +292,7 @@ export type OrderItemUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   order?: Prisma.OrderUpdateOneRequiredWithoutItemsNestedInput
-  medicine?: Prisma.MedicineUpdateOneRequiredWithoutOrderItemsNestedInput
+  medicine?: Prisma.MedicineUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderItemUncheckedUpdateInput = {
@@ -508,7 +508,7 @@ export type OrderItemCreateWithoutOrderInput = {
   id?: string
   quantity: number
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
-  medicine: Prisma.MedicineCreateNestedOneWithoutOrderItemsInput
+  medicine: Prisma.MedicineCreateNestedOneWithoutOrdersInput
 }
 
 export type OrderItemUncheckedCreateWithoutOrderInput = {
@@ -583,7 +583,7 @@ export type OrderItemUpdateWithoutOrderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  medicine?: Prisma.MedicineUpdateOneRequiredWithoutOrderItemsNestedInput
+  medicine?: Prisma.MedicineUpdateOneRequiredWithoutOrdersNestedInput
 }
 
 export type OrderItemUncheckedUpdateWithoutOrderInput = {

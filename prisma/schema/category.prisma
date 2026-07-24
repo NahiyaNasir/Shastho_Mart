@@ -1,7 +1,12 @@
-model Category {
-  id        String     @id @default(uuid())
-  name      String     @unique
-  medicines Medicine[]
+model Categories {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  image       String?
+  description String?
+
+  medicines   Medicine[]
+  slug        String         @unique
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

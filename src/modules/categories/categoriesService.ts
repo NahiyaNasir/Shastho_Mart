@@ -1,11 +1,12 @@
-import { Category } from "../../../generated/prisma/client";
+
+import { Categories } from "../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 
 const createCategoryService = async (
-  data: Omit<Category, "id" | "createdAt" | "updatedAt">,
+  data: Omit<Categories, "id" | "createdAt" | "updatedAt">,
 ) => {
-  const result = await prisma.category.create({
+  const result = await prisma.categories.create({
     data,
   });
   return result;
@@ -14,8 +15,8 @@ const createCategoryService = async (
 const getAllCategoriesService = async (
   queryParams: Record<string, string | undefined> = {},
 ) => {
-  const queryBuilder = new QueryBuilder<Category, Record<string, unknown>, unknown>(
-    prisma.category,
+  const queryBuilder = new QueryBuilder<Categories, Record<string, unknown>, unknown>(
+        prisma.categories,
     queryParams,
     {
       searchableFields: ["name"],
@@ -27,7 +28,7 @@ const getAllCategoriesService = async (
 };
 
 const deleteCategoryService = async (categoryId: string, isAdmin: boolean) => {
-  const categoryData = await prisma.category.findUniqueOrThrow({
+  const categoryData = await prisma.categories.findUniqueOrThrow({
     where: { id: categoryId },
   });
 
@@ -35,7 +36,7 @@ const deleteCategoryService = async (categoryId: string, isAdmin: boolean) => {
     throw new Error("Unauthorized to delete category");
   }
 
-  const result = await prisma.category.delete({
+  const result = await prisma.categories.delete({
     where: { id: categoryId },
   });
   return result;

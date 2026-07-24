@@ -1,8 +1,6 @@
 
-import { Medicine } from "../../../generated/prisma/client";
-import { MedicineWhereInput } from "../../../generated/prisma/models";
 import { medicinesFilterableFields, medicinesIncludeConfig, medicinesSearchableFields } from "../../config/query.config";
-import { Prisma } from "../../generated/prisma/client";
+import { Medicine, Prisma } from "../../generated/prisma/client";
 import { IQueryParams, IQueryResult } from "../../interface/QueryBuilder.interface";
 import { prisma } from "../../lib/prisma";
 import { QueryBuilder } from "../../utils/QueryBuilder";

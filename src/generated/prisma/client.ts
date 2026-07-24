@@ -32,7 +32,7 @@ export * from "./enums"
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
  * // Fetch zero or more Categories
- * const categories = await prisma.category.findMany()
+ * const categories = await prisma.categories.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -42,10 +42,10 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
- * Model Category
+ * Model Categories
  * 
  */
-export type Category = Prisma.CategoryModel
+export type Categories = Prisma.CategoriesModel
 /**
  * Model Medicine
  * 

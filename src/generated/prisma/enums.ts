@@ -36,3 +36,13 @@ export const Status = {
 } as const
 
 export type Status = (typeof Status)[keyof typeof Status]
+
+
+export const UnitType = {
+  Pcs: 'Pcs',
+  Strip: 'Strip',
+  Box: 'Box',
+  Bottle: 'Bottle'
+} as const
+
+export type UnitType = (typeof UnitType)[keyof typeof UnitType]
