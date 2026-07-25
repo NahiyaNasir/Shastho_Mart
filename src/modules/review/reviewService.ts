@@ -1,4 +1,5 @@
-import { Review } from "../../../generated/prisma/client";
+
+import { Review } from "../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 
@@ -55,7 +56,10 @@ const getReviewsService = async (
       medicine: {
         select: {
           name: true,
-          manufacturer: true,
+          description: true,
+          price: true,
+          stock: true,
+          image: true,
         },
       },
     })

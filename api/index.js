@@ -1082,6 +1082,7 @@ var createCategoryService = async (data) => {
   return result;
 };
 var getAllCategoriesService = async (queryParams = {}) => {
+  console.log("prisma.categories:", prisma.categories);
   const queryBuilder = new QueryBuilder(
     prisma.categories,
     queryParams,
@@ -1548,10 +1549,44 @@ router5.get("/profile/me", middleware_default(), UserController.getUser);
 router5.patch("/profile/me", middleware_default(), UserController.updateUser);
 var userRouter = router5;
 
+// src/modules/stats/stats.route.ts
+import { Router as Router6 } from "express";
+
+// src/modules/stats/stats.service.ts
+var getPublicStats = async () => {
+  const [totalMedicines, totalCategories, totalSellers, totalOrders] = await Promise.all([
+    prisma.medicine.count(),
+    prisma.categories.count(),
+    prisma.user.count({ where: { role: "SELLER" } }),
+    prisma.order.count()
+  ]);
+  console.log(prisma.medicine);
+  console.log(prisma.categories);
+  console.log(prisma.user);
+  console.log(prisma.order);
+  return { totalMedicines, totalCategories, totalSellers, totalOrders };
+};
+
+// src/modules/stats/stats.controller.ts
+var getStats = catchAsync(async (req, res) => {
+  const result = await getPublicStats();
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Stats fetched successfully",
+    data: result
+  });
+});
+
+// src/modules/stats/stats.route.ts
+var router6 = Router6();
+router6.get("/", getStats);
+var statsRouter = router6;
+
 // src/app.ts
 var app = express();
 var allowedOrigins = [
-  process.env.APP_URL || "https://shastho-mart-client.vercel.app"
+  process.env.APP_URL || "http://localhost:3000 "
 ].filter(Boolean);
 app.use(
   cors({
@@ -1577,6 +1612,7 @@ app.use("/api/categories", categoriesRouter);
 app.use("/api/orders", router2);
 app.use("/api/review", router3);
 app.use("/api/admin/users", userRouter);
+app.use("/api/stats", statsRouter);
 app.get("/", (req, res) => {
   res.send("Hello, from shastho mart");
 });

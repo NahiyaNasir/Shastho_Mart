@@ -15,6 +15,7 @@ const createCategoryService = async (
 const getAllCategoriesService = async (
   queryParams: Record<string, string | undefined> = {},
 ) => {
+  console.log("prisma.categories:", prisma.categories);
   const queryBuilder = new QueryBuilder<Categories, Record<string, unknown>, unknown>(
         prisma.categories,
     queryParams,
