@@ -56,9 +56,7 @@ const getReviewsService = async (
       medicine: {
         select: {
           name: true,
-          description: true,
-          price: true,
-          stock: true,
+           genericName: true,
           image: true,
         },
       },

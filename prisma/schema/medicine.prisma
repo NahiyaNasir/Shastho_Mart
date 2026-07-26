@@ -41,5 +41,4 @@ model Medicine {
 
     @@unique([name, sellerId])
     @@index([categoryId])
-    users User[] @relation("SellerMedicines")
 }
