@@ -2,7 +2,7 @@
 import { prisma } from "../lib/prisma"
 import { UserRole } from "../middleware/middleware"
 
-async function seedAdmin() {
+export      async function seedAdmin() {
       const adminData= {
          name:`${process.env.ADMIN_NAME}` ,
             email: `${process.env.ADMIN_EMAIL}`,
