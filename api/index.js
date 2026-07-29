@@ -86,7 +86,11 @@ var auth = betterAuth({
     provider: "postgresql"
     // or "mysql", "postgresql", ...etc
   }),
-  trustedOrigins: [process.env.APP_URL],
+  trustedOrigins: [
+    process.env.APP_URL,
+    "http://localhost:3000",
+    "http://localhost:3001"
+  ],
   user: {
     additionalFields: {
       role: {
@@ -1587,7 +1591,9 @@ var statsRouter = router6;
 // src/app.ts
 var app = express();
 var allowedOrigins = [
-  process.env.APP_URL || "http://localhost:3000 "
+  process.env.APP_URL,
+  "http://localhost:3000",
+  "http://localhost:3001"
 ].filter(Boolean);
 app.use(
   cors({
@@ -1619,10 +1625,55 @@ app.get("/", (req, res) => {
 });
 var app_default = app;
 
+// src/scripts/seedAdmin.ts
+async function seedAdmin() {
+  const adminData = {
+    name: `${process.env.ADMIN_NAME}`,
+    email: `${process.env.ADMIN_EMAIL}`,
+    role: "ADMIN" /* ADMIN */,
+    password: `${process.env.ADMIN_PASSWORD}`
+  };
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        email: adminData.email
+      }
+    });
+    if (existingUser) {
+      throw new Error(" user already exist");
+    }
+    const signUpAdmin = await fetch(`${process.env.BETTER_AUTH_URL}/api/auth/sign-up/email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "origin": `${process.env.APP_URL}`
+      },
+      body: JSON.stringify(adminData)
+    });
+    console.log(signUpAdmin);
+    if (signUpAdmin.ok) {
+      console.log("**** Admin created");
+      await prisma.user.update({
+        where: {
+          email: adminData.email
+        },
+        data: {
+          emailVerified: true
+        }
+      });
+      console.log("**** Email verification status updated!");
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+seedAdmin();
+
 // src/index.ts
 var PORT = process.env.PORT || 5e3;
 async function main() {
   try {
+    seedAdmin();
     await prisma.$connect();
     console.log("server is running");
     app_default.listen(PORT, () => {

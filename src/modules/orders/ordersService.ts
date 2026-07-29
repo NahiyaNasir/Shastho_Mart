@@ -1,7 +1,7 @@
-
 import { OrderStatus } from "../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { QueryBuilder } from "../../utils/QueryBuilder";
+import AppError from "../../errorHelpers/AppError";
 
 const CreateOrderService = async (
   data:any,
@@ -24,7 +24,6 @@ const CreateOrderService = async (
 
         const calculatePrice = Number(medicine.price) * item.quantity;
         totalAmount += calculatePrice;
-console.log(totalAmount);
         orderItemsForPrisma.push({
           medicineId: item.medicineId,
           quantity: item.quantity,
@@ -48,12 +47,107 @@ console.log(totalAmount);
       },
       include: { items: true}
     })
-
-   
-   
   });
 };
 
+// Every order in the system, for admins.
+const getAllOrderService = async (
+  queryParams: Record<string, string | undefined>,
+) => {
+  const builder = new QueryBuilder(
+    prisma.order,
+    queryParams,
+    {
+      searchableFields: ["user.name", "user.email", "address"],
+      filterableFields: ["status", "userId"],
+    },
+  );
+
+  return builder
+    .search()
+    .filter()
+    .paginate()
+    .sort()
+    .include({
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      items: {
+        select: {
+          quantity: true,
+          price: true,
+          medicine: {
+            select: {
+              name: true,
+              price: true,
+              category: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+    .execute();
+};
+
+// Only orders that contain at least one of this seller's own medicines —
+// a seller must never see orders belonging entirely to other sellers.
+const getSellerOrderService = async (
+  sellerId: string,
+  queryParams: Record<string, string | undefined>,
+) => {
+  const builder = new QueryBuilder(
+    prisma.order,
+    queryParams,
+    {
+      searchableFields: ["user.name", "user.email", "address"],
+      filterableFields: ["status"],
+    },
+  );
+
+  return builder
+    .search()
+    .filter()
+    .where({ items: { some: { medicine: { sellerId } } } })
+    .paginate()
+    .sort()
+    .include({
+      user: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+      // Only this seller's own line items within the order — a shared
+      // order with another seller's medicines shouldn't leak those rows.
+      items: {
+        where: { medicine: { sellerId } },
+        select: {
+          quantity: true,
+          price: true,
+          medicine: {
+            select: {
+              name: true,
+              price: true,
+              sellerId: true,
+              category: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+    .execute();
+};
 
 const getAllUserOrderService = async (
   userId: string,
@@ -95,13 +189,8 @@ const getAllUserOrderService = async (
     })
     .execute();
 };
-const getAllOrderService=async(userId:string)=>{  
-    
 
- 
-  
-    }
-    const getOrderByIdService=async(orderId:string,userId:string)=>{  
+const getOrderByIdService=async(orderId:string,userId:string)=>{  
       const order= await prisma.order.findFirstOrThrow({
         where:{ id:orderId,
          userId:userId
@@ -112,7 +201,33 @@ const getAllOrderService=async(userId:string)=>{
       });
       return order;
         }
- const  updateOrderStatus=async(orderId:string,status:OrderStatus)=>{
+
+// A seller may only change the status of an order that actually contains
+// one of their own medicines.
+const updateOrderStatusBySeller = async (
+  orderId: string,
+  sellerId: string,
+  status: OrderStatus,
+) => {
+  const owns = await prisma.order.findFirst({
+    where: { id: orderId, items: { some: { medicine: { sellerId } } } },
+    select: { id: true },
+  });
+
+  if (!owns) {
+    throw new AppError(
+      403,
+      "You can only update orders that contain your own medicines",
+    );
+  }
+
+  return await prisma.order.update({
+    where: { id: orderId },
+    data: { status },
+  });
+};
+
+const updateOrderStatus=async(orderId:string,status:OrderStatus)=>{
      const isExist = await prisma.order.findUniqueOrThrow({
     where: {
       id: orderId,
@@ -120,17 +235,12 @@ const getAllOrderService=async(userId:string)=>{
     select: { id: true },
   });
 
-  console.log(isExist);
-
   return await prisma.order.update({
     where: {
       id: isExist.id,
-      
     },
     data: { status: status },
   });
 };
 
- 
-
-export { CreateOrderService, getAllOrderService, getAllUserOrderService, getOrderByIdService, updateOrderStatus };
+export { CreateOrderService, getAllOrderService, getSellerOrderService, getAllUserOrderService, getOrderByIdService, updateOrderStatus, updateOrderStatusBySeller };

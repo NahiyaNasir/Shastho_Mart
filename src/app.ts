@@ -13,7 +13,9 @@ import { statsRouter } from "./modules/stats/stats.route";
 const app = express();
 const allowedOrigins = [
 
-  process.env.APP_URL || "http://localhost:3000",
+  process.env.APP_URL, 
+  "http://localhost:3000",
+  "http://localhost:3001",
 
 
 
