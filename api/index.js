@@ -792,7 +792,6 @@ var CreateOrderService = async (data, userId) => {
       }
       const calculatePrice = Number(medicine.price) * item.quantity;
       totalAmount += calculatePrice;
-      console.log(totalAmount);
       orderItemsForPrisma.push({
         medicineId: item.medicineId,
         quantity: item.quantity,
@@ -815,6 +814,80 @@ var CreateOrderService = async (data, userId) => {
       include: { items: true }
     });
   });
+};
+var getAllOrderService = async (queryParams) => {
+  const builder = new QueryBuilder(
+    prisma.order,
+    queryParams,
+    {
+      searchableFields: ["user.name", "user.email", "address"],
+      filterableFields: ["status", "userId"]
+    }
+  );
+  return builder.search().filter().paginate().sort().include({
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    items: {
+      select: {
+        quantity: true,
+        price: true,
+        medicine: {
+          select: {
+            name: true,
+            price: true,
+            category: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
+      }
+    }
+  }).execute();
+};
+var getSellerOrderService = async (sellerId, queryParams) => {
+  const builder = new QueryBuilder(
+    prisma.order,
+    queryParams,
+    {
+      searchableFields: ["user.name", "user.email", "address"],
+      filterableFields: ["status"]
+    }
+  );
+  return builder.search().filter().where({ items: { some: { medicine: { sellerId } } } }).paginate().sort().include({
+    user: {
+      select: {
+        name: true,
+        email: true
+      }
+    },
+    // Only this seller's own line items within the order — a shared
+    // order with another seller's medicines shouldn't leak those rows.
+    items: {
+      where: { medicine: { sellerId } },
+      select: {
+        quantity: true,
+        price: true,
+        medicine: {
+          select: {
+            name: true,
+            price: true,
+            sellerId: true,
+            category: {
+              select: {
+                name: true
+              }
+            }
+          }
+        }
+      }
+    }
+  }).execute();
 };
 var getAllUserOrderService = async (userId, queryParams) => {
   const builder = new QueryBuilder(
@@ -857,6 +930,22 @@ var getOrderByIdService = async (orderId, userId) => {
   });
   return order;
 };
+var updateOrderStatusBySeller = async (orderId, sellerId, status) => {
+  const owns = await prisma.order.findFirst({
+    where: { id: orderId, items: { some: { medicine: { sellerId } } } },
+    select: { id: true }
+  });
+  if (!owns) {
+    throw new AppError_default(
+      403,
+      "You can only update orders that contain your own medicines"
+    );
+  }
+  return await prisma.order.update({
+    where: { id: orderId },
+    data: { status }
+  });
+};
 var updateOrderStatus = async (orderId, status) => {
   const isExist = await prisma.order.findUniqueOrThrow({
     where: {
@@ -864,7 +953,6 @@ var updateOrderStatus = async (orderId, status) => {
     },
     select: { id: true }
   });
-  console.log(isExist);
   return await prisma.order.update({
     where: {
       id: isExist.id
@@ -883,6 +971,44 @@ var CreateOrders = catchAsync(async (req, res) => {
     success: true,
     message: "Order created successfully",
     data: result
+  });
+});
+var getAllOrder = catchAsync(async (req, res) => {
+  const queryParams = {
+    ...req.query
+  };
+  if (req.query.search && typeof req.query.search === "string") {
+    queryParams.searchTerm = req.query.search;
+    delete queryParams.search;
+  }
+  const result = await getAllOrderService(queryParams);
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Orders fetched successfully",
+    data: result.data,
+    meta: result.meta
+  });
+});
+var getSellerOrders = catchAsync(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new AppError_default(401, "Unauthorized");
+  }
+  const queryParams = {
+    ...req.query
+  };
+  if (req.query.search && typeof req.query.search === "string") {
+    queryParams.searchTerm = req.query.search;
+    delete queryParams.search;
+  }
+  const result = await getSellerOrderService(user.id, queryParams);
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Orders fetched successfully",
+    data: result.data,
+    meta: result.meta
   });
 });
 var getMyOrders = catchAsync(async (req, res) => {
@@ -930,12 +1056,30 @@ var updateOrder = catchAsync(async (req, res) => {
     data: result
   });
 });
+var updateOrderBySeller = catchAsync(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new AppError_default(401, "Unauthorized");
+  }
+  const orderId = req.params.orderId;
+  const status = req.body.status;
+  const result = await updateOrderStatusBySeller(orderId, user.id, status);
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Order updated successfully",
+    data: result
+  });
+});
 
 // src/modules/orders/ordersRoute.ts
 var router2 = Router2();
 router2.post("/", middleware_default("CUSTOMER" /* CUSTOMER */), CreateOrders);
+router2.get("/", middleware_default("ADMIN" /* ADMIN */), getAllOrder);
+router2.get("/my-orders", middleware_default("CUSTOMER" /* CUSTOMER */), getMyOrders);
+router2.get("/seller/orders", middleware_default("SELLER" /* SELLER */), getSellerOrders);
 router2.get("/:orderId", middleware_default("CUSTOMER" /* CUSTOMER */), getOrderById);
-router2.patch("/:orderId/seller", middleware_default("SELLER" /* SELLER */), updateOrder);
+router2.patch("/:orderId/seller", middleware_default("SELLER" /* SELLER */), updateOrderBySeller);
 
 // src/modules/review/reviewRoute.ts
 import { Router as Router3 } from "express";
